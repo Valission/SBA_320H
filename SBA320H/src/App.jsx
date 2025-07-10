@@ -1,26 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import './App.css'
+import ComicList from './Comics.jsx'
+import { fetchComic } from './API.js'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [comics, setComics] = useState([])
+  const [query, setQuery] = useState('')
+
+  useEffect(() =>{
+    async function getComics() {
+      try{
+        const data = await fetchComic(query)
+        setComics(data.data.results)
+      } catch(err){
+        console.error('failed to find Comics', err)
+      }
+    }
+
+    getComics()
+  },[query]);
+
 
   return (
     <>
-      <div>
-        
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+     <div className='app'>
+      <h1>Marvel Comic Search</h1>
+
+      <input value={query} onChange={(e) => setQuery(e.target.value)}
+      placeholder='Type a comic book name' />
+
+      <ComicList comics={comics}/>
+     </div>
     </>
   )
 }
